@@ -1,4 +1,5 @@
 import java.awt.event.*;
+import java.sql.ResultSet;
 import java.util.*;
 import java.io.*;
 import java.awt.*;
@@ -88,6 +89,34 @@ public class Login extends Frame implements ActionListener{
         Object src = ae.getSource();
         try{
             if(src==b1){
+                Con con=new Con();
+                String cardNum=tf1.getText().toString();
+                String cardpin=tf1.getText().toString();
+                String query="select* from login where cardnumber='"+cardNum+"' and pin='"+cardpin+"'";
+                try {
+                    ResultSet rs = con.s.executeQuery(query);
+                    if(rs.next()){
+                        setVisible(false);
+                        new Transaction(cardpin).setVisible(true);
+                    }
+                    else {
+                        Dialog d=new Dialog(this,"Error",false);
+                        d.setVisible(true);
+                        d.setSize(320,100);
+                        d.setLayout(new FlowLayout());
+                        d.setLocation(750,350);
+                        d.add(new Label("Cand Details are wrong"));
+                        d.addWindowListener(new WindowAdapter() {
+                            @Override
+                            public void windowClosing(WindowEvent e) {
+                                super.windowClosing(e);
+                                d.dispose();
+                            }
+                        });
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
 
             }else if(src==b2){
                 tf1.setText("");
