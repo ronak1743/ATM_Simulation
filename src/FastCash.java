@@ -9,14 +9,15 @@ public class FastCash extends Frame implements ActionListener{
 
     Button b1,b2,b3,b4,b5,b6,b7;
     String PinNum;
+    String cardnum;
 
-
-    public FastCash(String PinNum){
+    public FastCash(String cardnum,String PinNum){
         setVisible(true);
         setSize(900,900);
         setLocation(500,70);
         setLayout(null);
         this.PinNum=PinNum;
+        this.cardnum=cardnum;
 
         addWindowListener(new WindowAdapter() {
             @Override
@@ -96,31 +97,31 @@ public class FastCash extends Frame implements ActionListener{
         }
     }
     public static void main(String[] args) {
-        new FastCash("1234");
+
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource()==b7){
             setVisible(false);
-            new Transaction(PinNum).setVisible(true);
+            new Transaction(cardnum,PinNum).setVisible(true);
         }
         else{
             Button b=(Button) e.getSource();
             String am=b.getLabel().toString().substring(3);
             try {
                 Con con=new Con();
-                ResultSet rs=con.s.executeQuery("select * from bank where pin ='"+PinNum+"'");
-                int balance=0;
-                while (rs.next()){
-                    if(rs.getString("type").equals("Deposit")){
-                        balance+=Integer.parseInt(rs.getString("amount"));
-                    }
-                    else{
-                        balance-=Integer.parseInt(rs.getString("amount"));
-                    }
+
+                int prev=0;
+                ResultSet rs=con.s.executeQuery("select* from user where cardnum='"+cardnum+"'");
+
+                if (rs.next()) {
+                    prev = rs.getInt("ammount");
+                } else {
+
+                    System.out.println("No user found with cardnum: " + cardnum);
                 }
-                if(balance<Integer.parseInt(am)){
+                if(prev<Integer.parseInt(am)){
                     Dialog d = new Dialog(this, "Error", true);
                     d.setSize(200, 150);
                     d.setLocation(700, 500);
@@ -139,8 +140,11 @@ public class FastCash extends Frame implements ActionListener{
                 }
                 else{
 
-                    String query="insert into bank values('"+PinNum+"','"+new Date().toString()+"','Withdraw','"+am+"')";
-                    con.s.executeUpdate(query);
+
+                        prev -= Integer.parseInt(am);
+                        String q = "UPDATE user SET ammount = " + prev + " WHERE cardnum = '" + cardnum + "'";
+                        con.s.executeUpdate(q);
+                        con.s.executeUpdate("insert into bank values('"+PinNum+"','"+new Date()+"','Withdraw','"+am+"')");
 
                     Dialog d = new Dialog(this, "Success", true);
                     d.setSize(200, 150);
@@ -158,7 +162,7 @@ public class FastCash extends Frame implements ActionListener{
 
                     d.setVisible(true);
                     setVisible(false);
-                    new Transaction(PinNum).setVisible(true);
+                    new Transaction(cardnum,PinNum).setVisible(true);
                 }
             }
             catch (Exception ex){

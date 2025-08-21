@@ -202,8 +202,11 @@ public class SignUpThree extends Frame implements ActionListener {
                     Con c1 = new Con();
                     String q1 = "insert into signupthree values('" + ranNo + "','" + atype + "','" + cardno + "','" + pin + "','" + facility + "')";
                     String q2 = "insert into login values('" + ranNo + "','" + cardno + "','" + pin + "')";
+                    String q3 = "INSERT INTO user VALUES('" + cardno + "','" + pin + "','" + ranNo + "'," + 0 + ")";
+
                     c1.s.executeUpdate(q1);
                     c1.s.executeUpdate(q2);
+                    c1.s.executeUpdate(q3);
                     Dialog d = new Dialog(this, "Error", true);
                     d.setSize(200, 150);
                     d.setLocation(500, 500);
@@ -216,6 +219,8 @@ public class SignUpThree extends Frame implements ActionListener {
                         @Override
                         public void windowClosing(WindowEvent e) {
                             d.dispose();
+                            setVisible(false);
+                            new Login().setVisible(true);
                         }
                     });
 

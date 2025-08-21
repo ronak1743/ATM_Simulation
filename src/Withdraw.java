@@ -3,6 +3,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
@@ -12,13 +13,14 @@ public class Withdraw extends Frame implements ActionListener {
     TextField t1;
     private Image img;
     Button b1,b2;
-    String PinNum;
-    public Withdraw(String PinNum){
+    String PinNum,cardnum;
+    public Withdraw(String cardnum,String PinNum){
 //        setVisible(true);
         setLayout(null);
         setSize(900,900);
         setLocation(500,70);
         this.PinNum=PinNum;
+        this.cardnum=cardnum;
 
         addWindowListener(new WindowAdapter() {
             @Override
@@ -60,7 +62,6 @@ public class Withdraw extends Frame implements ActionListener {
 
     }
     public static void main(String[] args) {
-        new Withdraw("1234");
     }
 
 
@@ -97,15 +98,23 @@ public class Withdraw extends Frame implements ActionListener {
             else{
                 try {
                     Con con=new Con();
-                    String query="insert into bank values('"+PinNum+"','"+date.toString()+"','Withdraw','"+am+"')";
-                    con.s.executeUpdate(query);
-                    Dialog d = new Dialog(this, "Success", true);
-                    d.setSize(200, 150);
-                    d.setLocation(700, 500);
-                    d.setLayout(new FlowLayout());
 
-                    d.add(new Label("Ammount:"+am+" Withdraw succesfully"));
-
+                    ResultSet rs=con.s.executeQuery("select* from user where cardnum='"+cardnum+"'");
+                    if (rs.next()) {
+                        int prev = rs.getInt("ammount");
+                        if (prev >= Integer.parseInt(am)) {
+                            prev -= Integer.parseInt(am);
+                            String q = "UPDATE user SET ammount = " + prev + " WHERE cardnum = '" + cardnum + "'";
+                            con.s.executeUpdate(q);
+                            con.s.executeUpdate("insert into bank values('"+PinNum+"','"+date+"','Withdraw','"+am+"')");
+                        } else {
+                            System.out.println("Insufficient Balance");
+                        }
+                    } else {
+                        System.out.println("User not found");
+                    }
+                    Dialog d=new Dialog(this);
+                    d.setVisible(true);
                     d.addWindowListener(new WindowAdapter() {
                         @Override
                         public void windowClosing(WindowEvent e) {
@@ -115,7 +124,7 @@ public class Withdraw extends Frame implements ActionListener {
 
                     d.setVisible(true);
                     setVisible(false);
-                    new Transaction(PinNum).setVisible(true);
+                    new Transaction(cardnum,PinNum).setVisible(true);
 
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
@@ -125,7 +134,7 @@ public class Withdraw extends Frame implements ActionListener {
 
         } else if (e.getSource()==b2) {
             this.dispose();
-            new Transaction(PinNum).setVisible(true);
+            new Transaction(cardnum,PinNum).setVisible(true);
 
 
         }

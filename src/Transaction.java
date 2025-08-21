@@ -6,15 +6,16 @@ public class Transaction extends Frame implements ActionListener{
     Label l1;
 
     Button b1,b2,b3,b4,b5,b6,b7;
-    String PinNum;
+    String PinNum,cardnum;
 
 
-    public Transaction(String PinNum){
+    public Transaction(String cardnum,String PinNum){
         setVisible(true);
         setSize(900,900);
         setLocation(500,70);
         setLayout(null);
         this.PinNum=PinNum;
+        this.cardnum=cardnum;
 
         addWindowListener(new WindowAdapter() {
             @Override
@@ -94,7 +95,7 @@ public class Transaction extends Frame implements ActionListener{
         }
     }
     public static void main(String[] args) {
-        new Transaction("1234");
+//        new Transaction("1234");
     }
 
     @Override
@@ -105,15 +106,15 @@ public class Transaction extends Frame implements ActionListener{
         }
         else if(e.getSource()==b1){
             setVisible(false);
-            new Deposit(PinNum).setVisible(true);
+            new Deposit(cardnum,PinNum).setVisible(true);
         }
         else if(e.getSource()==b2){
             setVisible(false);
-            new Withdraw(PinNum).setVisible(true);
+            new Withdraw(cardnum,PinNum).setVisible(true);
         }
         else if(e.getSource()==b3){
             setVisible(false);
-            new FastCash(PinNum).setVisible(true);
+            new FastCash(cardnum,PinNum).setVisible(true);
         }
     }
 }

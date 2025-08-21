@@ -91,13 +91,15 @@ public class Login extends Frame implements ActionListener{
             if(src==b1){
                 Con con=new Con();
                 String cardNum=tf1.getText().toString();
-                String cardpin=tf1.getText().toString();
-                String query="select* from login where cardnumber='"+cardNum+"' and pin='"+cardpin+"'";
+                String cardpin=tf2.getText().toString();
+
+                String query = "SELECT * FROM user WHERE cardnum='" + cardNum + "' AND pin='" + cardpin + "'";
+
                 try {
                     ResultSet rs = con.s.executeQuery(query);
                     if(rs.next()){
                         setVisible(false);
-                        new Transaction(cardpin).setVisible(true);
+                        new Transaction(cardNum,cardpin).setVisible(true);
                     }
                     else {
                         Dialog d=new Dialog(this,"Error",false);

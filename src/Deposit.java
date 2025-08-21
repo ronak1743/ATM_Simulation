@@ -3,6 +3,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
@@ -12,14 +13,15 @@ public class Deposit extends Frame implements ActionListener {
     TextField t1;
     private Image img;
     Button b1,b2;
-    String PinNum;
-    public Deposit(String PinNum){
+    String PinNum,cardnum;
+    public Deposit(String cardnum,String PinNum){
         setVisible(true);
         setLayout(null);
         setSize(900,900);
         setLocation(500,70);
         this.PinNum=PinNum;
 
+        this.cardnum=cardnum;
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -60,7 +62,6 @@ public class Deposit extends Frame implements ActionListener {
 
     }
     public static void main(String[] args) {
-        new Deposit("1234");
     }
 
 
@@ -98,7 +99,18 @@ public class Deposit extends Frame implements ActionListener {
                 try {
                     Con con=new Con();
                     String query="insert into bank values('"+PinNum+"','"+date.toString()+"','Deposit','"+am+"')";
+                    ResultSet rs=con.s.executeQuery("select* from user where cardnum='"+cardnum+"'");
+                    int prev = 0;
+                    if (rs.next()) {
+                        prev = rs.getInt("ammount");
+                    } else {
+
+                        System.out.println("No user found with cardnum: " + cardnum);
+                    }
+                    prev+=Integer.parseInt(am);
+                    String q = "UPDATE user SET ammount = " + prev + " WHERE cardnum = '" + cardnum + "'";
                     con.s.executeUpdate(query);
+                    con.s.executeUpdate(q);
                     Dialog d = new Dialog(this, "Success", true);
                     d.setSize(200, 150);
                     d.setLocation(700, 500);
@@ -115,7 +127,7 @@ public class Deposit extends Frame implements ActionListener {
 
                     d.setVisible(true);
                     setVisible(false);
-                    new Transaction(PinNum).setVisible(true);
+                    new Transaction(cardnum,PinNum).setVisible(true);
 
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
@@ -125,7 +137,7 @@ public class Deposit extends Frame implements ActionListener {
 
         } else if (e.getSource()==b2) {
             setVisible(false);
-            new Transaction(PinNum).setVisible(true);
+            new Transaction(cardnum,PinNum).setVisible(true);
         }
     }
 }
