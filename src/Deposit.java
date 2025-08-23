@@ -62,6 +62,7 @@ public class Deposit extends Frame implements ActionListener {
 
     }
     public static void main(String[] args) {
+        new Deposit("5040936023664490","7490");
     }
 
 

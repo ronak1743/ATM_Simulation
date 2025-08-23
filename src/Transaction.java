@@ -95,7 +95,7 @@ public class Transaction extends Frame implements ActionListener{
         }
     }
     public static void main(String[] args) {
-//        new Transaction("1234");
+        new Transaction("5040936023664490","7490");
     }
 
     @Override
@@ -115,6 +115,14 @@ public class Transaction extends Frame implements ActionListener{
         else if(e.getSource()==b3){
             setVisible(false);
             new FastCash(cardnum,PinNum).setVisible(true);
+        }
+        else if(e.getSource()==b6){
+            setVisible(false);
+            new Balance(cardnum,PinNum);
+        }
+        else if(e.getSource()==b5){
+            setVisible(false);
+            new ChangePin(cardnum,PinNum);
         }
     }
 }

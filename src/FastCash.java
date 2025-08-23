@@ -139,8 +139,6 @@ public class FastCash extends Frame implements ActionListener{
                     d.setVisible(true);
                 }
                 else{
-
-
                         prev -= Integer.parseInt(am);
                         String q = "UPDATE user SET ammount = " + prev + " WHERE cardnum = '" + cardnum + "'";
                         con.s.executeUpdate(q);

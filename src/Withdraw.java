@@ -99,6 +99,8 @@ public class Withdraw extends Frame implements ActionListener {
                 try {
                     Con con=new Con();
 
+
+
                     ResultSet rs=con.s.executeQuery("select* from user where cardnum='"+cardnum+"'");
                     if (rs.next()) {
                         int prev = rs.getInt("ammount");
@@ -107,24 +109,61 @@ public class Withdraw extends Frame implements ActionListener {
                             String q = "UPDATE user SET ammount = " + prev + " WHERE cardnum = '" + cardnum + "'";
                             con.s.executeUpdate(q);
                             con.s.executeUpdate("insert into bank values('"+PinNum+"','"+date+"','Withdraw','"+am+"')");
+                            Dialog d=new Dialog(this,"Sucsess",false);
+                            d.setSize(200, 150);
+                            d.setLocation(700, 500);
+                            d.setLayout(new FlowLayout());
+                            d.add(new Label("Withdrawal is sucsessfull"));
+                            d.setVisible(true);
+                            d.addWindowListener(new WindowAdapter() {
+                                @Override
+                                public void windowClosing(WindowEvent e) {
+                                    super.windowClosing(e);
+                                    d.dispose();
+                                    dispose();
+                                    new Transaction(cardnum,PinNum).setVisible(true);
+                                }
+                            });
                         } else {
                             System.out.println("Insufficient Balance");
+                            Dialog d=new Dialog(this,"Error",false);
+                            d.setSize(200, 150);
+                            d.setLocation(700, 500);
+                            d.setLayout(new FlowLayout());
+                            d.add(new Label("Insufficient Balance"));
+                            d.setVisible(true);
+                            d.addWindowListener(new WindowAdapter() {
+                                @Override
+                                public void windowClosing(WindowEvent e) {
+                                    super.windowClosing(e);
+                                    d.dispose();
+
+                                }
+                            });
+
                         }
                     } else {
                         System.out.println("User not found");
-                    }
-                    Dialog d=new Dialog(this);
-                    d.setVisible(true);
-                    d.addWindowListener(new WindowAdapter() {
-                        @Override
-                        public void windowClosing(WindowEvent e) {
-                            d.dispose();
-                        }
-                    });
+                        Dialog d=new Dialog(this,"Error",false);
+                        d.setSize(200, 150);
+                        d.setLocation(700, 500);
+                        d.setLayout(new FlowLayout());
+                        d.add(new Label("User not found"));
+                        d.setVisible(true);
+                        d.addWindowListener(new WindowAdapter() {
+                            @Override
+                            public void windowClosing(WindowEvent e) {
+                                super.windowClosing(e);
+                                d.dispose();
 
-                    d.setVisible(true);
-                    setVisible(false);
-                    new Transaction(cardnum,PinNum).setVisible(true);
+                            }
+                        });
+                    }
+
+
+
+
+
 
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
